@@ -26,6 +26,7 @@ app.get('/api/movies', (req, res) => {
   db.query(`SELECT * FROM movies`, (err, result) => {
     if (err) {
       console.log(err);
+      res.status(400).end();
     }
     console.log(result);
     res.status(200).json(result);
@@ -53,55 +54,48 @@ app.post('/api/add-movie', (req, res) => {
         (err, result) => {
           if (err) {
             console.log(err);
+            res.status(400).end();
           }
           console.log(result);
           res.status(200).json(result);
         }
       );
     } else {
-      res.status(400).json(result);
+      res.status(400).end();
     }
   });
 });
 
 app.post('/api/update-review', (req, res) => {
-  console.log(req.body);
   let newReviewObj = req.body;
   let movieID = newReviewObj.movie_id;
   let reviewText = newReviewObj.review;
-  console.log(movieID);
-  console.log(reviewText);
 
-  if (movieID && reviewText) {
-    db.query(
-      `INSERT INTO reviews (movie_id, review) VALUES (?,?)`,
-      [movieID, reviewText],
-      (err, result) => {
-        if (err) {
-          console.log(err);
-        }
-        console.log(result);
-        res.status(200).json(result);
+  db.query(
+    `INSERT INTO reviews (movie_id, review) VALUES (?,?)`,
+    [movieID, reviewText],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        res.status(400).end();
       }
-    );
-  } else {
-    res.status(400).end();
-  }
+      console.log(result);
+      res.status(200).json(result);
+    }
+  );
 });
 
-// // Hardcoded query: DELETE FROM course_names WHERE id = 3;
-
-// db.query(`DELETE FROM course_names WHERE id = ?`, 3, (err, result) => {
-//   if (err) {
-//     console.log(err);
-//   }
-//   console.log(result);
-// });
-
-// // Query database
-// db.query('SELECT * FROM course_names', function (err, results) {
-//   console.log(results);
-// });
+app.delete('/api/movie/:id', (req, res) => {
+  const deleteID = req.params.id;
+  db.query(`DELETE FROM movies WHERE id=?`, deleteID, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.status(400).end();
+    }
+    console.log(result);
+    res.status(200).json(result);
+  });
+});
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
