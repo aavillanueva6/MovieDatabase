@@ -34,18 +34,34 @@ app.get('/api/movies', (req, res) => {
 
 app.post('/api/add-movie', (req, res) => {
   console.log(req.body[0]);
+  let isNewMovie = true;
 
-  db.query(
-    `INSERT INTO movies (movie_name) VALUES (?)`,
-    req.body[0],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log(result);
-      res.status(200).json(result);
+  db.query(`SELECT * FROM movies`, (err, result) => {
+    if (err) {
+      console.log(err);
     }
-  );
+    console.log(result);
+    result.forEach((element) => {
+      if (element.movie_name === req.body[0]) {
+        isNewMovie = false;
+      }
+    });
+    if (isNewMovie) {
+      db.query(
+        `INSERT INTO movies (movie_name) VALUES (?)`,
+        req.body[0],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          }
+          console.log(result);
+          res.status(200).json(result);
+        }
+      );
+    } else {
+      res.status(400).json(result);
+    }
+  });
 });
 
 // // Hardcoded query: DELETE FROM course_names WHERE id = 3;
