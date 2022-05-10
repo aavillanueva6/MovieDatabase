@@ -34,7 +34,6 @@ app.get('/api/movies', (req, res) => {
 });
 
 app.post('/api/add-movie', (req, res) => {
-  console.log(req.body[0]);
   let isNewMovie = true;
 
   db.query(`SELECT * FROM movies`, (err, result) => {
@@ -67,9 +66,9 @@ app.post('/api/add-movie', (req, res) => {
 });
 
 app.post('/api/update-review', (req, res) => {
-  let newReviewObj = req.body;
-  let movieID = newReviewObj.movie_id;
-  let reviewText = newReviewObj.review;
+  const newReviewObj = req.body;
+  const movieID = newReviewObj.movie_id;
+  const reviewText = newReviewObj.review;
 
   db.query(
     `INSERT INTO reviews (movie_id, review) VALUES (?,?)`,
